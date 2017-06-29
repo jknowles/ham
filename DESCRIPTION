@@ -1,0 +1,12 @@
+Package: ham
+Title: Human Augmented Matching
+Version: 0.0.0.9000
+Authors@R: person("Jared", "Knowles", email = "jknowles@gmail.com", role = c("aut", "cre"))
+Description: A simple Shiny application that allows a user to iterate through a vector and select matches from a corresponding vector interactively.
+Depends: R (>= 3.4.0),
+  shiny,
+  dplyr
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
