@@ -100,7 +100,7 @@ ham <- function(source, choices, key = NULL, ...) {
                                 match = isolate(input$choice),
                                 stringsAsFactors = FALSE)
         }
-        values$DT <- rbind(newLine, values$DT)
+        values$DT <- rbind(values$DT, newLine)
         # na.omit(values$DT)
       })
 
