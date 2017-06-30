@@ -127,5 +127,5 @@ ham <- function(source, choices, key = NULL, ...) {
     })
     }
   )
-  runApp(app, ...)
+  runApp(app)
 }
