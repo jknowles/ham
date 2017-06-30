@@ -11,7 +11,7 @@ ham(source, choices, key = NULL, ...)
 
 \item{key}{optional ID vector to append as well to the match table}
 
-\item{...}{additional arguments}
+\item{...}{additional arguments to agrep}
 
 \item{options}{a vector of possible matches}
 }
@@ -27,6 +27,6 @@ match a simple grep for each value of \code{source}
 \dontrun{
 ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)))
 ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)),
-key = 101:126)
+key = 101:178)
 }
 }

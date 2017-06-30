@@ -3,7 +3,7 @@
 #' @param source a vector of items you want to find a match for
 #' @param options  a vector of possible matches
 #' @param key optional ID vector to append as well to the match table
-#' @param ... additional arguments
+#' @param ... additional arguments to agrep
 #'
 #' @description The app presents you with all possible values in \code{key} that
 #' match a simple grep for each value of \code{source}
@@ -19,7 +19,7 @@
 #' \dontrun{
 #' ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)))
 #' ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)),
-#' key = 101:126)
+#' key = 101:178)
 #' }
 ham <- function(source, choices, key = NULL, ...) {
   app <- list(
@@ -52,7 +52,8 @@ ham <- function(source, choices, key = NULL, ...) {
       row <- reactive(input$Next + 1)
       source_text <- reactive(source[input$Next + 1])
       output$source <- renderText(source_text())
-      choice_text <- reactive(c(grep(source_text(), choices, value = TRUE),
+      choice_text <- reactive(c(agrep(source_text(), choices,
+                                      value = TRUE, ...),
                                 NA))
 
       if(!is.null(key)){
