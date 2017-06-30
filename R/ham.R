@@ -135,7 +135,9 @@ ham <- function(source, choices, key = NULL, n = NULL, ...) {
 
       observe({
         if(input$Stop > 0){
-        match_table <<- na.omit(isolate(values$DT))
+        out <- isolate(values$DT)
+        out <- out[!is.na(out$source),]
+        match_table <<- out
         stopApp(returnValue = "Your matches are saved in match_table")
       }
     })
