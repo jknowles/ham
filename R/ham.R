@@ -3,7 +3,8 @@
 #' @param source a vector of items you want to find a match for
 #' @param options  a vector of possible matches
 #' @param key optional ID vector to append as well to the match table
-#' @param ... additional arguments to agrep
+#' @param n maximum number of choices to present user, default is 7
+#' @param ... additional arguments to runApp
 #'
 #' @description The app presents you with all possible values in \code{key} that
 #' match a simple grep for each value of \code{source}
@@ -14,6 +15,7 @@
 #' @import shiny
 #' @import dplyr
 #' @importFrom stats na.omit
+#' @importFrom stringdist stringsim
 #' @importFrom shinythemes shinytheme
 #' @examples
 #' \dontrun{
@@ -21,7 +23,7 @@
 #' ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)),
 #' key = 101:178)
 #' }
-ham <- function(source, choices, key = NULL, ...) {
+ham <- function(source, choices, key = NULL, n = NULL, ...) {
   app <- list(
     ui = fluidPage(theme = shinythemes::shinytheme("darkly"),
 
@@ -49,12 +51,24 @@ ham <- function(source, choices, key = NULL, ...) {
       )
     ),
     server = function(input, output) {
+      if(is.null(n)){
+        n <- 7
+      }
       row <- reactive(input$Next + 1)
       source_text <- reactive(source[input$Next + 1])
       output$source <- renderText(source_text())
-      choice_text <- reactive(c(agrep(source_text(), choices,
-                                      value = TRUE, ...),
-                                NA))
+
+      trunc_match <- function(x, y, n){
+        out <- y[order(stringdist::stringsim(x, y, method = "lv"),
+                decreasing = TRUE)]
+        if(length(out) < n){
+          n <- length(out)
+        }
+        out <- out[1:n]
+      }
+
+      choice_text <- reactive(c(trunc_match(source_text(), choices,
+                                      n = n), NA))
 
       if(!is.null(key)){
       key_text <- reactive({
@@ -127,5 +141,5 @@ ham <- function(source, choices, key = NULL, ...) {
     })
     }
   )
-  runApp(app)
+  runApp(app, ... )
 }

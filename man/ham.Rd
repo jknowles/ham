@@ -4,14 +4,16 @@
 \alias{ham}
 \title{Human Augmented Matching}
 \usage{
-ham(source, choices, key = NULL, ...)
+ham(source, choices, key = NULL, n = NULL, ...)
 }
 \arguments{
 \item{source}{a vector of items you want to find a match for}
 
 \item{key}{optional ID vector to append as well to the match table}
 
-\item{...}{additional arguments to agrep}
+\item{n}{maximum number of choices to present user, default is 7}
+
+\item{...}{additional arguments to runApp}
 
 \item{options}{a vector of possible matches}
 }
