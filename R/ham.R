@@ -109,14 +109,14 @@ ham <- function(source, choices, key = NULL, ...) {
           values$DT <- values$DT %>% group_by(source) %>%
             summarise(match = last(match),
                       key = last(key))
-          values$DT <- values$DT[!is.na(values$DT$source),]
         } else {
           values$DT <- values$DT %>% group_by(source) %>%
             summarise(match = last(match))
-          values$DT <- values$DT[!is.na(values$DT$source),]
-          # na.omit(values$DT)
         }
-
+        out <- isolate(values$DT)
+        out <- out[!is.na(out$source),]
+        out <- out[seq(dim(out)[1],1),]
+        out
       })
 
       observe({
