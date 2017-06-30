@@ -6,7 +6,8 @@ Description: A simple Shiny application that allows a user to iterate through a 
 Depends: R (>= 3.4.0),
   shiny,
   dplyr,
-  shinythemes
+  shinythemes,
+  stringdist
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
