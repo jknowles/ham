@@ -7,29 +7,42 @@
 #' @description The app presents you with all possible values in \code{key} that
 #' match a simple grep for each value of \code{source}
 #'
-#' @return Nothing. A shiny app.
+#' @return An object called match_table to the global environment containing your
+#' matches
 #' @export
-#' @import shinhy
+#' @import shiny
 #' @import dplyr
+#' @importFrom stats na.omit
+#' @importFrom shinythemes shinytheme
 #' @examples
 #' \dontrun{
 #' ham(source = letters, key = c(letters, paste0(letters, 1), paste0(letters, 2)))
 #' }
 ham <- function(source, key, ...) {
   app <- list(
-    ui = pageWithSidebar(
+    ui = fluidPage(theme = shinythemes::shinytheme("darkly"),
 
-      headerPanel("Human Augmented Matching"),
+      titlePanel("Human Augmented Matching"),
+      sidebarLayout(
 
-      sidebarPanel(
-        actionButton("Next", "Next")
-      ),
+        sidebarPanel(
+          h3("Your controls"),
+          actionButton("Stop", "Submit", icon = icon("check-circle")),
+          h3("Your progress"),
+          h4(strong(textOutput("counter")))
+        ),
 
-      mainPanel(
-        verbatimTextOutput("source"),
-        uiOutput("options"),
-        tableOutput("table")
-        # verbatimTextOutput("key")
+        mainPanel(
+          h2("Source element to match"),
+          verbatimTextOutput("source"),
+          h2("Match options:"),
+          uiOutput("options"),
+          actionButton("Next", "Next"),
+          h2("Match tables so far:"),
+          tableOutput("table")
+          # verbatimTextOutput("key")
+        )
+
       )
     ),
     server = function(input, output) {
@@ -37,6 +50,10 @@ ham <- function(source, key, ...) {
       source_text <- reactive(source[input$Next + 1])
       output$source <- renderText(source_text())
       key_text <- reactive(grep(source_text(), key, value = TRUE))
+
+      output$counter <- renderText({
+        paste0(input$Next +1, "/", length(source))
+      })
 
       output$options <- renderUI({
         selectInput("choice", "Match", choices = key_text(),
@@ -64,7 +81,12 @@ ham <- function(source, key, ...) {
         values$DT
       })
 
-
+      observe({
+        if(input$Stop > 0){
+        match_table <<- na.omit(isolate(values$DT))
+        stopApp(returnValue = "Your matches are saved in match_table")
+      }
+    })
     }
   )
   runApp(app, ...)

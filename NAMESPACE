@@ -2,4 +2,6 @@
 
 export(ham)
 import(dplyr)
-import(shinhy)
+import(shiny)
+importFrom(shinythemes,shinytheme)
+importFrom(stats,na.omit)

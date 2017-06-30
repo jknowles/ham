@@ -14,7 +14,8 @@ ham(source, key, ...)
 \item{...}{additional arguments}
 }
 \value{
-Nothing. A shiny app.
+An object called match_table to the global environment containing your
+matches
 }
 \description{
 The app presents you with all possible values in \code{key} that

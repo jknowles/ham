@@ -5,7 +5,8 @@ Authors@R: person("Jared", "Knowles", email = "jknowles@gmail.com", role = c("au
 Description: A simple Shiny application that allows a user to iterate through a vector and select matches from a corresponding vector interactively.
 Depends: R (>= 3.4.0),
   shiny,
-  dplyr
+  dplyr,
+  shinythemes
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
