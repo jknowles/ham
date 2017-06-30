@@ -86,7 +86,6 @@ ham <- function(source, choices, key = NULL, ...) {
                                 stringsAsFactors = FALSE)
       }
 
-
       newEntry <- observeEvent(input$choice, {
         if(!is.null(key)){
           keyVar <- key_text()
@@ -101,7 +100,7 @@ ham <- function(source, choices, key = NULL, ...) {
                                 match = isolate(input$choice),
                                 stringsAsFactors = FALSE)
         }
-        values$DT <- rbind(values$DT, newLine)
+        values$DT <- rbind(newLine, values$DT)
         # na.omit(values$DT)
       })
 
