@@ -4,17 +4,19 @@
 \alias{ham}
 \title{Human Augmented Matching}
 \usage{
-ham(source, key, ...)
+ham(source, choices, key = NULL, ...)
 }
 \arguments{
 \item{source}{a vector of items you want to find a match for}
 
-\item{key}{a vector of possible matches}
+\item{key}{optional ID vector to append as well to the match table}
 
 \item{...}{additional arguments}
+
+\item{options}{a vector of possible matches}
 }
 \value{
-An object called match_table to the global environment containing your
+An object \code{match_table} to the global environment containing your
 matches
 }
 \description{
@@ -23,6 +25,8 @@ match a simple grep for each value of \code{source}
 }
 \examples{
 \dontrun{
-ham(source = letters, key = c(letters, paste0(letters, 1), paste0(letters, 2)))
+ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)))
+ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)),
+key = 101:126)
 }
 }
