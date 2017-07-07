@@ -4,10 +4,13 @@
 #' @param options  a vector of possible matches
 #' @param key optional ID vector to append as well to the match table
 #' @param n maximum number of choices to present user, default is 7
+#' @param context a data.frame with additional elements to use to decide on a
+#' choice from among the options
 #' @param ... additional arguments to runApp
 #'
 #' @description The app presents you with all possible values in \code{key} that
-#' match a simple grep for each value of \code{source}
+#' match a simple grep for each value of \code{source}. If \code{context} is
+#' provided, then the first column needs to be identical to options.
 #'
 #' @return An object \code{match_table} to the global environment containing your
 #' matches
@@ -19,11 +22,20 @@
 #' @importFrom shinythemes shinytheme
 #' @examples
 #' \dontrun{
-#' ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)))
-#' ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)),
-#' key = 101:178)
+#' source_keys <- letters
+#' choice_keys <- c(letters, paste0(letters, 1), paste0(letters, 2))
+#' ham(source = source_keys, choices = choice_keys)
+#' ham(source = source_keys, choices = choice_keys, key = 101:178)
+#' context_table <- data.frame(match = choice_keys, key = 101:178, data = runif(26*3))
+#' ham(source = source_keys, choices = choice_keys,
+#' key = 101:178, context = context_table)
+#' # Test duplicates
+#' context_table <- data.frame(match = c(letters, letters, LETTERS), key = 101:178,
+#' data = runif(26*3), stringsAsFactors=FALSE)
+#' ham(source = letters, choices = context_table$match, key = 101:178,
+#' context = context_table)
 #' }
-ham <- function(source, choices, key = NULL, n = NULL, ...) {
+ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
   app <- list(
     ui = fluidPage(theme = shinythemes::shinytheme("darkly"),
 
@@ -43,6 +55,8 @@ ham <- function(source, choices, key = NULL, n = NULL, ...) {
           h2("Match options:"),
           uiOutput("options"),
           actionButton("Next", "Next"),
+          h2("Context Table:"),
+          tableOutput("context"),
           h2("Match tables so far:"),
           tableOutput("table")
           # verbatimTextOutput("key")
@@ -131,6 +145,17 @@ ham <- function(source, choices, key = NULL, n = NULL, ...) {
         out <- out[!is.na(out$source),]
         out <- out[seq(dim(out)[1],1),]
         out
+      })
+
+      conTab <- reactive({
+        out <- context[which(context[, 1] %in% choice_text()), ]
+        out
+      })
+
+      output$context <- renderTable({
+        if(!is.null(context)){
+          conTab()
+        }
       })
 
       observe({
