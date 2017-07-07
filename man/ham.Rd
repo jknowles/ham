@@ -4,7 +4,8 @@
 \alias{ham}
 \title{Human Augmented Matching}
 \usage{
-ham(source, choices, key = NULL, n = NULL, context = NULL, ...)
+ham(source, choices, key = NULL, n = NULL, context = NULL,
+  dedupe = FALSE, ...)
 }
 \arguments{
 \item{source}{a vector of items you want to find a match for}
@@ -15,6 +16,8 @@ ham(source, choices, key = NULL, n = NULL, context = NULL, ...)
 
 \item{context}{a data.frame with additional elements to use to decide on a
 choice from among the options}
+
+\item{dedupe}{logical, default FALSE, should only one match be selected}
 
 \item{...}{additional arguments to runApp}
 
@@ -31,17 +34,19 @@ provided, then the first column needs to be identical to options.
 }
 \examples{
 \dontrun{
-ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)))
-ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)),
-key = 101:178)
-context_table <- data.frame(match = c(letters, paste0(letters, 1),
-paste0(letters, 2)), key = 101:178, data = runif(26*3))
-ham(source = letters, choices = c(letters, paste0(letters, 1), paste0(letters, 2)),
+source_keys <- letters
+choice_keys <- c(letters, paste0(letters, 1), paste0(letters, 2))
+ham(source = source_keys, choices = choice_keys)
+ham(source = source_keys, choices = choice_keys, key = 101:178)
+context_table <- data.frame(match = choice_keys, key = 101:178, data = runif(26*3))
+ham(source = source_keys, choices = choice_keys,
 key = 101:178, context = context_table)
 # Test duplicates
-context_table <- data.frame(match = c(letters, letters, LETTERS), key = 101:178,
+source_keys <- letters
+choice_keys <- c(letters, letters, LETTERS)
+context_table <- data.frame(match = choice_keys, key = 101:178,
 data = runif(26*3), stringsAsFactors=FALSE)
-ham(source = letters, choices = context_table$match, key = 101:178,
+ham(source = source_keys, choices = context_table$match, key = 101:178,
 context = context_table)
 }
 }

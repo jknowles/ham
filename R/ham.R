@@ -6,6 +6,7 @@
 #' @param n maximum number of choices to present user, default is 7
 #' @param context a data.frame with additional elements to use to decide on a
 #' choice from among the options
+#' @param dedupe logical, default FALSE, should only one match be selected
 #' @param ... additional arguments to runApp
 #'
 #' @description The app presents you with all possible values in \code{key} that
@@ -37,7 +38,8 @@
 #' ham(source = source_keys, choices = context_table$match, key = 101:178,
 #' context = context_table)
 #' }
-ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
+ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
+                dedupe = FALSE, ...) {
   app <- list(
     ui = fluidPage(theme = shinythemes::shinytheme("darkly"),
 
@@ -50,7 +52,7 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
           h3("Your progress"),
           h4(strong(textOutput("counter"))),
           h3("Debug:"),
-          h4(textOutput("debug"))
+          htmlOutput("debug")
         ),
 
         mainPanel(
@@ -85,14 +87,24 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
         out <- out[1:n]
       }
 
-      # get all labels
       get_label <- function(input, choice_set){
         label <- names(choice_set)[input == choice_set]
-        # We don't need NA here
         label <- na.omit(label)
         all_labels <- names(choice_set)[which(names(choice_set) == label)]
         all_labels
       }
+
+      all_match_labels_index <- function(input, choice_set){
+        label <- names(choice_set)[input == choice_set]
+        label <- na.omit(label)
+        which(names(choice_set) == label)
+      }
+
+      get_choice_index <- function(input, choice_set){
+        idx <- which(input == choice_set)
+        idx
+      }
+
 
       choice_text <- reactive({
         out <- c(trunc_match(source_text(), choices,
@@ -105,11 +117,22 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
         out
       })
 
-      output$debug <- renderText({
-        paste0(key_text(), "\n")
-        paste0(get_label(input$choice, choice_text()), "\n")
-        paste0(input$choice, "\n")
-        paste0(names(choice_text()))
+      output$debug <- renderUI({
+
+        normalizedMatches <- all_match_labels_index(input$choice, choice_text())
+        match_choice <- get_choice_index(input$choice, choice_text())
+        keyIdx <- which(match_choice == normalizedMatches)
+        keyVar <- key_text()
+        if(keyIdx > length(keyVar)){
+          keyVar <- keyVar[length(keyVar)]
+        } else{
+          keyVar <- keyVar[keyIdx]
+        }
+
+        HTML(paste(key_text(),
+                   get_label(input$choice, choice_text()),
+                   input$choice, paste("Key:", keyVar), sep= "<br/>"))
+
       })
 
       if(!is.null(key)){
@@ -146,7 +169,18 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
       newEntry <- observeEvent(input$choice, {
         if(!is.null(key)){
           keyVar <- key_text()
-          keyVar <- ifelse(length(keyVar) > 1, paste0(keyVar, collapse = ","), keyVar)
+          if(dedupe == FALSE){
+            keyVar <- ifelse(length(keyVar) > 1, paste0(keyVar, collapse = ","), keyVar)
+          } else{
+            normalizedMatches <- all_match_labels_index(input$choice, choice_text())
+            match_choice <- get_choice_index(input$choice, choice_text())
+            keyIdx <- which(match_choice == normalizedMatches)
+            if(keyIdx > length(keyVar)){
+              keyVar <- keyVar[length(keyVar)]
+            } else{
+              keyVar <- keyVar[keyIdx]
+            }
+          }
           newLine <- data.frame(source = source_text(),
                                 match = isolate(input$choice),
                                 key = keyVar,
