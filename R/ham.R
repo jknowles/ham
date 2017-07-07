@@ -114,6 +114,7 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
           # Use this to be able to get a numeric index on the other side
           #out <- factor(out)
         }
+        out <- setNames(make.unique(out), out)
         out
       })
 
