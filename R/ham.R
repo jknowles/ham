@@ -50,9 +50,9 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
           h3("Your controls"),
           actionButton("Stop", "Submit", icon = icon("check-circle")),
           h3("Your progress"),
-          h4(strong(textOutput("counter"))),
-          h3("Debug:"),
-          htmlOutput("debug")
+          h4(strong(textOutput("counter")))
+          # h3("Debug:"),
+          # htmlOutput("debug")
         ),
 
         mainPanel(
@@ -117,23 +117,6 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
         out
       })
 
-      output$debug <- renderUI({
-
-        normalizedMatches <- all_match_labels_index(input$choice, choice_text())
-        match_choice <- get_choice_index(input$choice, choice_text())
-        keyIdx <- which(match_choice == normalizedMatches)
-        keyVar <- key_text()
-        if(keyIdx > length(keyVar)){
-          keyVar <- keyVar[length(keyVar)]
-        } else{
-          keyVar <- keyVar[keyIdx]
-        }
-
-        HTML(paste(key_text(),
-                   get_label(input$choice, choice_text()),
-                   input$choice, paste("Key:", keyVar), sep= "<br/>"))
-
-      })
 
       if(!is.null(key)){
       key_text <- reactive({
@@ -220,6 +203,31 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
           conTab()
         }
       })
+
+      # output$debug <- renderUI({
+      #   normalizedMatches <- all_match_labels_index(input$choice, choice_text())
+      #   match_choice <- get_choice_index(input$choice, choice_text())
+      #   keyIdx <- which(match_choice == normalizedMatches)
+      #   keyVar <- key_text()
+      #   if(is.null(keyVar)){
+      #     keyVar <- NA
+      #   }
+      #   if(is.null(keyIdx)){
+      #     keyIdx <- 0
+      #   }
+      #   if(keyIdx > length(keyVar)){
+      #     keyVar <- keyVar[length(keyVar)]
+      #   } else{
+      #     keyVar <- keyVar[keyIdx]
+      #   }
+      #
+      #   HTML(paste(key_text(),
+      #              get_label(input$choice, choice_text()),
+      #              input$choice, paste("Key:", keyVar), sep= "<br/>"))
+      #
+      # })
+
+
 
       observe({
         if(input$Stop > 0){
