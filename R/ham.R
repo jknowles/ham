@@ -30,9 +30,11 @@
 #' ham(source = source_keys, choices = choice_keys,
 #' key = 101:178, context = context_table)
 #' # Test duplicates
-#' context_table <- data.frame(match = c(letters, letters, LETTERS), key = 101:178,
+#' source_keys <- letters
+#' choice_keys <- c(letters, letters, LETTERS)
+#' context_table <- data.frame(match = choice_keys, key = 101:178,
 #' data = runif(26*3), stringsAsFactors=FALSE)
-#' ham(source = letters, choices = context_table$match, key = 101:178,
+#' ham(source = source_keys, choices = context_table$match, key = 101:178,
 #' context = context_table)
 #' }
 ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
@@ -46,7 +48,9 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
           h3("Your controls"),
           actionButton("Stop", "Submit", icon = icon("check-circle")),
           h3("Your progress"),
-          h4(strong(textOutput("counter")))
+          h4(strong(textOutput("counter"))),
+          h3("Debug:"),
+          h4(textOutput("debug"))
         ),
 
         mainPanel(
@@ -81,12 +85,37 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
         out <- out[1:n]
       }
 
-      choice_text <- reactive(c(trunc_match(source_text(), choices,
-                                      n = n), NA))
+      # get all labels
+      get_label <- function(input, choice_set){
+        label <- names(choice_set)[input == choice_set]
+        # We don't need NA here
+        label <- na.omit(label)
+        all_labels <- names(choice_set)[which(names(choice_set) == label)]
+        all_labels
+      }
+
+      choice_text <- reactive({
+        out <- c(trunc_match(source_text(), choices,
+                             n = n), NA)
+        if(any(duplicated(out))){
+          out <- setNames(make.unique(out), out)
+          # Use this to be able to get a numeric index on the other side
+          #out <- factor(out)
+        }
+        out
+      })
+
+      output$debug <- renderText({
+        paste0(key_text(), "\n")
+        paste0(get_label(input$choice, choice_text()), "\n")
+        paste0(input$choice, "\n")
+        paste0(names(choice_text()))
+      })
 
       if(!is.null(key)){
       key_text <- reactive({
-        key[which(choices == input$choice)]
+        # use the named label to select from key
+        key[which(choices == get_label(input$choice, choice_text()))]
       })
       }
       output$counter <- renderText({
@@ -95,7 +124,7 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
 
       output$options <- renderUI({
         selectInput("choice", "Match", choices = choice_text(),
-                     selected = NULL)
+                    selected = NULL)
       })
 
       values <- reactiveValues()
@@ -117,7 +146,7 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL, ...) {
       newEntry <- observeEvent(input$choice, {
         if(!is.null(key)){
           keyVar <- key_text()
-          keyVar <- ifelse(length(keyVar) > 1, NA, keyVar)
+          keyVar <- ifelse(length(keyVar) > 1, paste0(keyVar, collapse = ","), keyVar)
           newLine <- data.frame(source = source_text(),
                                 match = isolate(input$choice),
                                 key = keyVar,
