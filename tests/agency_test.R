@@ -702,5 +702,5 @@ id_keys <- c("FL00100", "FL00101", "FL00102", "FL00103", "FL00104", "FL00105",
 
 
 ham(source = source_keys, choice = choice_keys,
-    key = id_keys, n = 7, dedupe = TRUE)
+    key = id_keys, n = 7, dedupe = FALSE)
 

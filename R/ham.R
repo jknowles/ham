@@ -156,18 +156,24 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
           if(dedupe == FALSE){
             keyVar <- ifelse(length(keyVar) > 1, paste0(keyVar, collapse = ","), keyVar)
           } else{
+            # Safe NA handling for NA input
             normalizedMatches <- all_match_labels_index(input$choice, choice_text())
             match_choice <- get_choice_index(input$choice, choice_text())
             keyIdx <- which(match_choice == normalizedMatches)
-            if(keyIdx > length(keyVar)){
-              keyVar <- keyVar[length(keyVar)]
-            } else{
-              keyVar <- keyVar[keyIdx]
+            # When NA is selected, this returns NULL
+            if(length(keyIdx) == 0){
+              keyIdx <- 1
             }
+              if(keyIdx > length(keyVar)){
+                keyVar <- keyVar[length(keyVar)]
+              } else{
+                keyVar <- keyVar[keyIdx]
+              }
           }
+          keyVar <- ifelse(length(keyVar) == 0, NA, keyVar)
           newLine <- data.frame(source = source_text(),
                                 match = isolate(input$choice),
-                                key = keyVar,
+                                key = isolate(keyVar),
                                 stringsAsFactors = FALSE)
 
         } else{
