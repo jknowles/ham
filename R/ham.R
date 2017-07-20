@@ -200,10 +200,14 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
         out
       })
 
-      conTab <- reactive({
+      con_filter <- reactive({
         choice_set <- c(trunc_match(source_text(), choices,
-                             n = n), NA)
-        out <- context[which(context[, 1] %in% choice_set), ]
+                                    n = n), NA)
+        choice_set
+      })
+
+      conTab <- reactive({
+        out <- context[which(context[, 1] %in% con_filter()), ]
         out
       })
 
