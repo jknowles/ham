@@ -40,6 +40,10 @@
 #' }
 ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
                 dedupe = FALSE, ...) {
+  if(!is.null(context)){
+    # Avoid tbl_df issues
+    context <- as.data.frame(context)
+  }
   app <- list(
     ui = fluidPage(theme = shinythemes::shinytheme("darkly"),
 
