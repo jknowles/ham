@@ -1,0 +1,4 @@
+Name: Human augmented matching
+Description: Launch an app to select matches manually and store results as code.
+Binding: ham
+Interactive: true

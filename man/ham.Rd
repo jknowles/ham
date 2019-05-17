@@ -10,6 +10,8 @@ ham(source, choices, key = NULL, n = NULL, context = NULL,
 \arguments{
 \item{source}{a vector of items you want to find a match for}
 
+\item{choices}{a vector of possible matches}
+
 \item{key}{optional ID vector to append as well to the match table}
 
 \item{n}{maximum number of choices to present user, default is 7}
@@ -20,8 +22,6 @@ choice from among the options}
 \item{dedupe}{logical, default FALSE, should only one match be selected}
 
 \item{...}{additional arguments to runApp}
-
-\item{options}{a vector of possible matches}
 }
 \value{
 An object \code{match_table} to the global environment containing your

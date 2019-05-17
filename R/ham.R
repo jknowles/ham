@@ -1,7 +1,7 @@
 #' Human Augmented Matching
 #'
 #' @param source a vector of items you want to find a match for
-#' @param options  a vector of possible matches
+#' @param choices  a vector of possible matches
 #' @param key optional ID vector to append as well to the match table
 #' @param n maximum number of choices to present user, default is 7
 #' @param context a data.frame with additional elements to use to decide on a
@@ -18,9 +18,11 @@
 #' @export
 #' @import shiny
 #' @import dplyr
+#' @import miniUI
 #' @importFrom stats na.omit
 #' @importFrom stringdist stringsim
 #' @importFrom shinythemes shinytheme
+#' @importFrom stats setNames
 #' @examples
 #' \dontrun{
 #' source_keys <- letters
@@ -40,19 +42,19 @@
 #' }
 ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
                 dedupe = FALSE, ...) {
-  if(!is.null(context)){
+  if (!is.null(context)) {
     # Avoid tbl_df issues
     context <- as.data.frame(context)
   }
   app <- list(
-    ui = fluidPage(theme = shinythemes::shinytheme("darkly"),
+    ui = miniPage(theme = shinythemes::shinytheme("darkly"),
 
-      titlePanel("Human Augmented Matching"),
-      sidebarLayout(
+      gadgetTitleBar("Human Augmented Matching"),
+      miniContentPanel(
 
         sidebarPanel(
           h3("Your controls"),
-          actionButton("Stop", "Submit", icon = icon("check-circle")),
+          actionButton("done", "Submit", icon = icon("check-circle")),
           h3("Your progress"),
           h4(strong(textOutput("counter")))
           # h3("Debug:"),
@@ -247,7 +249,7 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
 
 
       observe({
-        if(input$Stop > 0){
+        if(input$done > 0){
         out <- isolate(values$DT)
         out <- out[!is.na(out$source),]
         match_table <<- out
