@@ -46,15 +46,22 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
     # Avoid tbl_df issues
     context <- as.data.frame(context)
   }
-  app <- list(
-    ui = miniPage(theme = shinythemes::shinytheme("darkly"),
+
+
+  ui <- miniPage(theme = shinythemes::shinytheme("darkly"),
+
 
       gadgetTitleBar("Human Augmented Matching"),
       miniContentPanel(
 
         sidebarPanel(
           h3("Your controls"),
-          actionButton("done", "Submit", icon = icon("check-circle")),
+          # Add "select source data"
+          # Add "select choices data"
+          # Add key
+          # Add context
+          # Add radial button on deduping
+          # actionButton("done", "Submit", icon = icon("check-circle")),
           h3("Your progress"),
           h4(strong(textOutput("counter")))
           # h3("Debug:"),
@@ -73,10 +80,10 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
           tableOutput("table")
           # verbatimTextOutput("key")
         )
-
       )
-    ),
-    server = function(input, output) {
+  )
+  # Server
+    server <- function(input, output, session) {
       if(is.null(n)){
         n <- 7
       }
@@ -248,15 +255,14 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
 
 
 
-      observe({
-        if(input$done > 0){
+      observeEvent(input$done, {
         out <- isolate(values$DT)
         out <- out[!is.na(out$source),]
-        match_table <<- out
-        stopApp(returnValue = "Your matches are saved in match_table")
-      }
-    })
+        stopApp(returnValue = out)
+      })
+  # End server
     }
-  )
-  runApp(app, ... )
+
+  viewer <- dialogViewer("HAM", width = 1000, height = 800)
+  runGadget(ui, server, viewer = viewer, ...)
 }

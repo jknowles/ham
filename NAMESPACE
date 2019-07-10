@@ -2,6 +2,7 @@
 
 export(ham)
 import(dplyr)
+import(miniUI)
 import(shiny)
 importFrom(shinythemes,shinytheme)
 importFrom(stats,na.omit)
