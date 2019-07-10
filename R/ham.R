@@ -63,6 +63,7 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
           # Add context
           # Add radial button on deduping
           # actionButton("done", "Submit", icon = icon("check-circle")),
+          # TODO: reorganize layout for cases where context table is in use
           h3("Your progress"),
           h4(strong(textOutput("counter")))
           # h3("Debug:"),
@@ -91,6 +92,9 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
       row <- reactive(input$Next + 1)
       source_text <- reactive(source[input$Next + 1])
       output$source <- renderText(source_text())
+
+      # TODO: Break out these functions to a separate zz.R  script
+      ## Document and test them
 
       trunc_match <- function(x, y, n){
         out <- y[order(stringdist::stringsim(x, y, method = "lv"),
