@@ -50,6 +50,7 @@ ham <- function(source, choices, key = NULL, n = NULL, context = NULL,
 
   ui <- miniPage(theme = shinythemes::shinytheme("darkly"),
 
+                 # show dialog to select data only if ham is initialized without it
 
       gadgetTitleBar("Human Augmented Matching"),
       miniContentPanel(
